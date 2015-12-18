@@ -15,4 +15,12 @@
      });
  }
 </script>
-<span id="hours">0</span>:<span id="minutes">0</span>:<span id="seconds">0</span>
+<?php
+    $date = date('h:i:s A');
+    $date = explode(':', $date);
+    $hrs = $date[0];
+    $min = $date[1];
+    $sec = $date[2];
+?>
+<h3> Hello there </h3>
+<p> Current time is: <span id="hours"><?php echo $hrs; ?></span>:<span id="minutes"><?php echo $min; ?></span>:<span id="seconds"><?php echo $sec; ?></span> </p>
