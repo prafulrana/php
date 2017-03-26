@@ -1,1 +1,4 @@
-<?php    echo $date = date('h:i:s A'); ?>
+<?php
+//direct
+echo date('h:i:s A');
+?>
